@@ -1,6 +1,7 @@
 package i8086
 
 import (
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
@@ -57,4 +58,28 @@ func (d *Disassembler) Disassemble() error {
 
 		fmt.Println(instruction.ToAsm())
 	}
+}
+
+func GetInstruction(b []byte) (Instruction, error) {
+	if len(b) != 2 {
+		return Instruction{}, errors.New("invalid instruction")
+	}
+
+	byteInt := binary.BigEndian.Uint16(b)
+
+	opcodeByte := (byteInt & OpcodeMask) >> OpcodeShift
+	direction := (byteInt & DirectionMask) >> DirectionShift
+	wide := (byteInt & WideMask) >> WideShift
+	memoryMode := (byteInt & MemoryModeMask) >> MemoryModeShift
+	reg := (byteInt & RegMask) >> RegShift
+	rm := (byteInt & RmMask) >> RmShift
+
+	return Instruction{
+		Opcode:    OpcodeMapping[byte(opcodeByte)],
+		Direction: direction != 0,
+		Wide:      wide != 0,
+		Mod:       MemoryMode(memoryMode),
+		Reg:       Register(reg),
+		RM:        RegisterOrMemory(rm),
+	}, nil
 }

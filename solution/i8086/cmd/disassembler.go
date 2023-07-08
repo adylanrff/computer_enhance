@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	i8086 "github.com/adylanrff/computer_enhance/solution/part1/8086-decode"
+	"github.com/adylanrff/computer_enhance/solution/i8086"
 )
 
 func main() {
